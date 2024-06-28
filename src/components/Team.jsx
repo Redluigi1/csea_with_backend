@@ -1,8 +1,9 @@
 import Zoom from 'react-reveal/Zoom';
 import React, { useEffect, useRef, useState } from "react";
 
-export const Team = (props) => {
+export const Team = () => {
   const [inView, setInView] = useState(false);
+  const [data, setData] = useState(null);
   const galleryRef = useRef(null);
 
   const handleScroll = () => {
@@ -21,6 +22,20 @@ export const Team = (props) => {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/teams');
+        const result = await response.json();
+        setData(result);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div id="team" className="text-center">
       <div className="container">
@@ -33,26 +48,21 @@ export const Team = (props) => {
           <p></p>
         </div>
         <div className="team-scroll-container" ref={galleryRef}>
-          {props.data ? (
+          {data ? (
             <div id="row" className="team-scroll-row">
-              {props.data.map((d, i) => (
-                <div
-                  key={`${d.name}-${i}`}
-                  className="card_team"
-                >
+              {data.map((d, i) => (
+                <div key={`${d.name}-${i}`} className="card_team">
                   <div className="thumbnail">
-                    {" "}
                     <div className="team-img-container">
-                    <img src={d.img} alt="..." className="team-img" />
+                      <img src={d.url} alt={d.name} className="team-img" />
                     </div>
                     <div className="ag-courses_box">
                       <div className="ag-courses_item">
                         <a href="#" className="ag-courses-item_link">
                           <div className="ag-courses-item_bg"></div>
-
                           <div className="ag-courses-item_title">
                             <p>{d.name}</p>
-                            <p>{d.job}</p>
+                            <p>{d.pos}</p>
                           </div>
                         </a>
                       </div>

@@ -2,8 +2,9 @@ import { Image } from "./image";
 import React, { useEffect, useRef, useState } from "react";
 import Zoom from 'react-reveal/Zoom';
 
-export const Gallery = (props) => {
+export const Gallery = () => {
   const [inView, setInView] = useState(false);
+  const [data, setData] = useState(null);
   const galleryRef = useRef(null);
 
   const handleScroll = () => {
@@ -21,6 +22,20 @@ export const Gallery = (props) => {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/events');
+        const result = await response.json();
+        setData(result);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    
+    fetchData();
+  }, []);
+
   return (
     <div id="portfolio" className="text-center">
       <div className="container">
@@ -34,26 +49,20 @@ export const Gallery = (props) => {
         <div className="row">
           <div className="portfolio-items">
             <div>
-              <a
-                href="#about"
-                className="btn btn-custom btn-lg page-scroll"
-              >
+              <a href="#about" className="btn btn-custom btn-lg page-scroll">
                 View more events
               </a>
             </div>
             <div><p></p></div>
 
-            {props.data
-              ? props.data.map((d, i) => (
+            {data
+              ? data.map((d, i) => (
                   <div
-                    key={`${d.title}-${i}`}
+                    key={`${d.event_name}-${i}`}
                     className="col-sm-6 col-md-4 col-lg-4"
                   >
                     <div ref={galleryRef}>
-                      <Image
-                        title={d.title}
-                        Image={d.Image}
-                      />
+                      <Image title={d.event_name} Image={d.url} />
                     </div>
                   </div>
                 ))
